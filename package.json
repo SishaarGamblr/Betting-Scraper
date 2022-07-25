@@ -1,0 +1,28 @@
+{
+  "name": "betting-scraper",
+  "version": "0.0.1",
+  "description": "Web Scraper for betting lines",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "build": "npm run clean; tsc -p tsconfig.build.json;",
+    "clean": "rm -rf dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SishaarGamblr/Betting-Scraper.git"
+  },
+  "author": "@SishaarRao",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SishaarGamblr/Betting-Scraper/issues"
+  },
+  "homepage": "https://github.com/SishaarGamblr/Betting-Scraper#readme",
+  "devDependencies": {
+    "@tsconfig/node16": "^1.0.3",
+    "typescript": "^4.7.4"
+  },
+  "dependencies": {
+    "selenium-webdriver": "^4.3.1"
+  }
+}
