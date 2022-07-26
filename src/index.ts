@@ -1,16 +1,19 @@
 import dotenv from 'dotenv';
+import moment from 'moment';
 
-import { Browser, Builder, until } from 'selenium-webdriver';
+import { Browser, Builder, By, until } from 'selenium-webdriver';
 import { Options, ServiceBuilder } from 'selenium-webdriver/chrome';
+import { DraftKings } from './datasources/draftkings';
 
 dotenv.config({ path: `config/.env.${process.env.NODE_ENV ?? 'development'}` });
 
 const options = new Options();
 
 options.setChromeBinaryPath(process.env.CHROME_BINARY_PATH as string);
+options.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36");
 
 // These options are necessary if you'd like to deploy to Heroku
-// options.addArguments("--headless");
+options.addArguments("--headless");
 // options.addArguments("--disable-gpu");
 // options.addArguments("--no-sandbox");
 
@@ -23,14 +26,12 @@ async function main () {
     .setChromeService(serviceBuilder)
     .build();
 
-  try {
-    const res1 = await driver.get('https://www.google.com');
-    const res2 = await driver.wait(until.titleMatches(/Google/));
-    const html = await driver.getPageSource();
-    console.log(`HTML is:\n\n{}\n\n`, html);
-  } finally {
-    await driver.quit();
-  }
+  const draftKings = new DraftKings(driver);
+    
+  // const matchups = await draftKings.getMLBLines(moment().add(25, 'hours'));
+  const matchups = await draftKings.getNFLLines(moment().add(25, 'hours'));
+
+  console.log(matchups);
 }
 
 main();
