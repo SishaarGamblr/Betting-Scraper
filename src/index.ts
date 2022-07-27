@@ -58,35 +58,43 @@ async function main () {
     await driver.quit();
   }
 
-  await Knex('lines_mlb').insert(mlbMatchups.map((matchup) => {
-    return {
-      home_team: matchup.home_team.name,
-      away_team: matchup.away_team.name,
-      home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
-      away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
-      date: matchup.date
-    }
-  }))
-    .onConflict(['home_team', 'away_team', 'date'])
-    .merge(['home_line', 'away_line'])
-    .then((results: any) => {
-      console.log(`Successfully inserted ${results.rowCount} entries to \`lines_mlb\``);
-    });
+  if (mlbMatchups.length > 0) {
+    await Knex('lines_mlb').insert(mlbMatchups.map((matchup) => {
+      return {
+        home_team: matchup.home_team.name,
+        away_team: matchup.away_team.name,
+        home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
+        away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
+        date: matchup.date
+      }
+    }))
+      .onConflict(['home_team', 'away_team', 'date'])
+      .merge(['home_line', 'away_line'])
+      .then((results: any) => {
+        console.log(`Successfully inserted ${results.rowCount} entries to \`lines_mlb\``);
+      });
+  } else {
+    console.log('No MLB matchups found');
+  }
 
-  await Knex('lines_nfl').insert(nflMatchups.map((matchup) => {
-    return {
-      home_team: matchup.home_team.name,
-      away_team: matchup.away_team.name,
-      home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
-      away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
-      date: matchup.date
-    }
-  }))
-    .onConflict(['home_team', 'away_team', 'date'])
-    .merge(['home_line', 'away_line'])
-    .then((results: any) => {
-      console.log(`Successfully inserted ${results.rowCount} entries to \`lines_nfl\``);
-    });
+  if (nflMatchups.length > 0) {
+    await Knex('lines_nfl').insert(nflMatchups.map((matchup) => {
+      return {
+        home_team: matchup.home_team.name,
+        away_team: matchup.away_team.name,
+        home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
+        away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
+        date: matchup.date
+      }
+    }))
+      .onConflict(['home_team', 'away_team', 'date'])
+      .merge(['home_line', 'away_line'])
+      .then((results: any) => {
+        console.log(`Successfully inserted ${results.rowCount} entries to \`lines_nfl\``);
+      });
+  } else {
+    console.log('No NFL matchups found');
+  }
 
   process.exit(0);
 }
