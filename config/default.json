@@ -4,6 +4,7 @@
     "binary_path": ""
   },
   "database": {
+    "url": "postgres://superuser:password@localhost:5432/betting_scraper_db",
     "host": "localhost",
     "port": 5432,
     "user": "superuser",

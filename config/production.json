@@ -4,6 +4,7 @@
     "binary_path": "ENVIRONMENT_VARIABLE"
   },
   "database": {
+    "url": "ENVIRONMENT_VARIABLE",
     "host": "ENVIRONMENT_VARIABLE",
     "port": 5432,
     "user": "ENVIRONMENT_VARIABLE",
