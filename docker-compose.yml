@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: app
+    build:
+      context: .
+      target: development
+      dockerfile: Dockerfile
+    volumes:
+      - .:/dist
+    working_dir: /dist
+    networks:
+      - default
+    depends_on:
+      - postgres
+    command: tail -f /dev/null
+  
+  postgres:
+    container_name: postgres
+    image: 'postgres:14.4'
+    user: postgres
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_DB=betting_scraper_db
+      - POSTGRES_USER=superuser
+      - POSTGRES_PASSWORD=password
+    networks:
+      - default
+

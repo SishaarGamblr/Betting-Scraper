@@ -6,7 +6,19 @@
   "scripts": {
     "test": "test",
     "build": "npm run clean; tsc -p tsconfig.build.json;",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "docker:dev": "docker-compose up",
+    "docker:connect": "docker-compose exec app /bin/bash",
+    "db:connect": "docker-compose exec postgres psql -d betting_scraper_db -U superuser",
+    "db:migrate": "knex migrate:latest --knexfile src/db/index.ts",
+    "db:migrate:make": "knex migrate:make --knexfile src/db/index.ts -x ts",
+    "db:reset": "if [ \"$NODE_ENV\" != \"production\" ]; then dropdb betting_scraper_db; npm run db:setup && npm run db:migrate; fi",
+    "db:rollback": "knex migrate:rollback --knexfile src/db/index.ts",
+    "db:setup": "if [ \"$NODE_ENV\" != \"production\" ]; then createdb -O superuser betting_scraper_db); fi",
+    "db:setup:user": "if [ \"$NODE_ENV\" != \"production\" ]; then createuser superuser; fi",
+    "db:seed:test": "NODE_ENV=test npm run db:seed",
+    "db:reset:test": "NODE_ENV=test npm run db:reset",
+    "db:setup:test": "NODE_ENV=test npm run db:setup"
   },
   "repository": {
     "type": "git",
@@ -20,13 +32,18 @@
   "homepage": "https://github.com/SishaarGamblr/Betting-Scraper#readme",
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
+    "@types/config": "^0.0.41",
     "@types/node": "^18.6.1",
     "@types/selenium-webdriver": "^4.1.2",
+    "ts-node": "^10.9.1",
     "typescript": "^4.7.4"
   },
   "dependencies": {
+    "config": "^3.3.7",
     "dotenv": "^16.0.1",
+    "knex": "^2.2.0",
     "moment": "^2.29.4",
+    "pg": "^8.7.3",
     "selenium-webdriver": "^4.3.1",
     "tslib": "^2.4.0"
   }

@@ -1,0 +1,13 @@
+{
+  "chrome": {
+    "driver_path": "./chromedriver",
+    "binary_path": ""
+  },
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "superuser",
+    "password": "password",
+    "database": "betting_scraper_db"
+  }
+}

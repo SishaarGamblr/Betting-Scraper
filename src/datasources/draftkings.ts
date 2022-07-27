@@ -32,10 +32,10 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
 
         matchups.push({
-          home: {
+          home_team: {
             name: homeTeam
           },
-          away: {
+          away_team: {
             name: awayTeam
           },
           home_line: {
@@ -48,8 +48,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
           },
           date: this.inferDateFromString(dateString)
         })
-
-        console.log(matchups[matchups.length - 1]);
 
         matchup_index += 2;
       } catch (err) {
@@ -82,10 +80,10 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getNFLDateSelector()}`)).then((element) => element.getText());
 
         matchups.push({
-          home: {
+          home_team: {
             name: homeTeam
           },
-          away: {
+          away_team: {
             name: awayTeam
           },
           home_line: {

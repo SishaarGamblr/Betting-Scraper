@@ -9,8 +9,8 @@ export interface Line {
 }
 
 export interface Matchup {
-  home: Team,
-  away: Team,
+  home_team: Team,
+  away_team: Team,
   home_line: Line,
   away_line: Line,
   date: moment.Moment
