@@ -1,7 +1,13 @@
 process.env.NODE_CONFIG_DIR = '../../config'
 import Config from 'config';
+import { Knex } from 'knex';
 
-export default {
+const connection: Knex.Config = {
   client: 'postgres',
-  connection: Config.get<string>('database.url')
-};
+  connection: {
+    connectionString: Config.get<string>('database.url'),
+    ssl: !Config.get<boolean>('database.ssl') ? undefined : { rejectUnauthorized: false }
+  }
+}
+
+export default connection;
