@@ -1,8 +1,8 @@
 import moment from "moment";
 import { By, ThenableWebDriver, until } from "selenium-webdriver";
-import { LineSource, Matchup } from "./common";
+import { Matchup, MLB_LineSource, NFL_LineSource } from "./common";
 
-export class DraftKings implements LineSource {
+export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
   private driver: ThenableWebDriver;
 
@@ -10,112 +10,134 @@ export class DraftKings implements LineSource {
     this.driver = driver;
   }
 
-  async getMLBLines (date: moment.Moment = moment()): Promise<Matchup[]> {
-    try {
-      await this.driver.get('https://sportsbook.draftkings.com/leagues/baseball/mlb');
-      await this.driver.wait(until.titleMatches(/MLB Betting Odds & Lines/));
+  async getMLBLines (currentDate: moment.Moment = moment()): Promise<Matchup[]> {
+    await this.driver.get('https://sportsbook.draftkings.com/leagues/baseball/mlb');
+    await this.driver.wait(until.titleMatches(/MLB Betting Odds & Lines/));
 
-      const matchups: Matchup[] = [];
+    const matchups: Matchup[] = [];
   
-      let matchup_index = 1;
-      let hasErrored = false;
+    let matchup_index = 1;
+    let hasErrored = false;
 
-      const dateDifference = date.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
+    const tableNum = currentDate.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
-      while(!hasErrored) {
-        try {
-          const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-          const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
-          
-          const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-          const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
+    while(!hasErrored) {
+      try {
+        const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
+        
+        const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
 
-          matchups.push({
-            home: {
-              name: homeTeam
-            },
-            away: {
-              name: awayTeam
-            },
-            home_line: {
-              favor: homeLine.charAt(0),
-              odds: parseInt(homeLine.slice(1))
-            },
-            away_line: {
-              favor: awayLine.charAt(0),
-              odds: parseInt(awayLine.slice(1))
-            },
-            date: moment()
-          })
+        const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
 
-          matchup_index += 2;
-        } catch (err) {
-          hasErrored = true;
-        }
+        matchups.push({
+          home: {
+            name: homeTeam
+          },
+          away: {
+            name: awayTeam
+          },
+          home_line: {
+            favor: homeLine.charAt(0),
+            odds: parseInt(homeLine.slice(1))
+          },
+          away_line: {
+            favor: awayLine.charAt(0),
+            odds: parseInt(awayLine.slice(1))
+          },
+          date: this.inferDateFromString(dateString)
+        })
+
+        console.log(matchups[matchups.length - 1]);
+
+        matchup_index += 2;
+      } catch (err) {
+        hasErrored = true;
       }
-
-      return matchups;
-    } finally {
-      await this.driver.quit();
     }
+
+    return matchups;
   }
 
-  async getNFLLines(date: moment.Moment = moment()): Promise<Matchup[]> {
-    try {
-      await this.driver.get('https://sportsbook.draftkings.com/leagues/football/nfl');
-      await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+  async getNFLLines(currentDate: moment.Moment = moment()): Promise<Matchup[]> {
+    await this.driver.get('https://sportsbook.draftkings.com/leagues/football/nfl');
+    await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
 
-      const matchups: Matchup[] = [];
+    const matchups: Matchup[] = [];
   
-      let matchup_index = 1;
-      let hasErrored = false;
+    let matchup_index = 1;
+    let hasErrored = false;
 
-      const dateDifference = date.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
+    const tableNum = currentDate.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
-      while(!hasErrored) {
-        try {
-          const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-          const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
-          
-          const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-          const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(dateDifference)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
+    while(!hasErrored) {
+      try {
+        const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
+        
+        const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
 
-          matchups.push({
-            home: {
-              name: homeTeam
-            },
-            away: {
-              name: awayTeam
-            },
-            home_line: {
-              favor: homeLine.charAt(0),
-              odds: parseInt(homeLine.slice(1))
-            },
-            away_line: {
-              favor: awayLine.charAt(0),
-              odds: parseInt(awayLine.slice(1))
-            },
-            date: moment()
-          })
+        const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getNFLDateSelector()}`)).then((element) => element.getText());
 
-          matchup_index += 2;
-        } catch (err) {
-          hasErrored = true;
-        }
+        matchups.push({
+          home: {
+            name: homeTeam
+          },
+          away: {
+            name: awayTeam
+          },
+          home_line: {
+            favor: homeLine.charAt(0),
+            odds: parseInt(homeLine.slice(1))
+          },
+          away_line: {
+            favor: awayLine.charAt(0),
+            odds: parseInt(awayLine.slice(1))
+          },
+          date: this.inferDateFromString(dateString)
+        });
+
+        matchup_index += 2;
+      } catch (err) {
+        hasErrored = true;
       }
-
-      return matchups;
-    } finally {
-      await this.driver.quit();
     }
+
+    return matchups;
+  }
+
+  private inferDateFromString(dateString: string): moment.Moment {
+    if (dateString.match(/TODAY/)) {
+      return moment().startOf('day');
+    }
+
+    if (dateString.match(/TOMORROW/)) {
+      return moment().startOf('day').add(1, 'day');
+    }
+
+    if (dateString.match(/[A-Z]{3} [A-Z]{3}/)) {
+      return moment(dateString.slice(4), 'MMM Do');
+    }
+
+    throw new Error(`Unrecognized date format: ${dateString}`);
+  }
+
+  private getNFLDateSelector() {
+    return `table > thead > tr > th.always-left.column-header > div > span > span`;
+  }
+
+  private getMLBDateSelector() {
+    return `table > thead > tr > th.always-left.column-header > div > span > span > span`;
   }
 
   private getTableSelector(tableNum: number) {
-    return `#root > section > section.sportsbook-wrapper__body > section > div.sportsbook-league-page__body > div > div.sportsbook-responsive-card-container__body > div > div > div.sportsbook-card-accordion__children-wrapper > div > div:nth-child(2) > div:nth-child(${tableNum})`;
+    return `#root > section > section.sportsbook-wrapper__body > section > div.sportsbook-league-page__body > div > div.sportsbook-responsive-card-container__body > div > div > div.sportsbook-card-accordion__children-wrapper > div > div:nth-child(2) > div:nth-child(${tableNum})  > `;
   }
   
   private getRowSelector (row: number) {
-    return ` > table > tbody > tr:nth-child(${row}) > `;
+    return `table > tbody > tr:nth-child(${row}) > `;
   }
   
   private getTeamNameSelector() {

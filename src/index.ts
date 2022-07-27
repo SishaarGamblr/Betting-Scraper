@@ -28,10 +28,13 @@ async function main () {
 
   const draftKings = new DraftKings(driver);
     
-  // const matchups = await draftKings.getMLBLines(moment().add(25, 'hours'));
-  const matchups = await draftKings.getNFLLines(moment().add(25, 'hours'));
+  const mlbMatchups = await draftKings.getMLBLines(moment());
+  // const nflMatchups = await draftKings.getNFLLines(moment().add(25, 'hours'));
 
-  console.log(matchups);
+  console.log(mlbMatchups);
+  // console.log(nflMatchups);
+
+  await driver.quit();
 }
 
 main();

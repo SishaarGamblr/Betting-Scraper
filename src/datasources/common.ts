@@ -16,8 +16,11 @@ export interface Matchup {
   date: moment.Moment
 }
 
-export interface LineSource {
+export interface MLB_LineSource {
   getMLBLines (): Promise<Matchup[]>;
+}
+
+export interface NFL_LineSource {
   getNFLLines (): Promise<Matchup[]>
 }
 
