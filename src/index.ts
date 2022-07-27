@@ -17,6 +17,7 @@ options.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)
 options.addArguments("--headless");
 options.addArguments("--disable-gpu");
 options.addArguments("--no-sandbox");
+options.addArguments("--disable-dev-shm-usage");
 
 async function main () {
   const serviceBuilder = new ServiceBuilder(Config.get<string>('chrome.driver_path'));
