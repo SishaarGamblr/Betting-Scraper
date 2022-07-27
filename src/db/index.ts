@@ -8,6 +8,7 @@ export default {
     port: Config.get<number>('database.port'),
     user: Config.get<string>('database.user'),
     password: Config.get<string>('database.password'),
-    database: Config.get<string>('database.database')
+    database: Config.get<string>('database.database'),
+    ssl: Config.get<boolean>('database.ssl')
   }
 };

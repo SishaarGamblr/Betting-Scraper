@@ -1,5 +1,14 @@
 {
+  "chrome": {
+    "driver_path": "ENVIRONMENT_VARIABLE",
+    "binary_path": "ENVIRONMENT_VARIABLE"
+  },
   "database": {
+    "host": "ENVIRONMENT_VARIABLE",
+    "port": 5432,
+    "user": "ENVIRONMENT_VARIABLE",
+    "password": "ENVIRONMENT_VARIABLE",
+    "database": "ENVIRONMENT_VARIABLE",
     "ssl": true
   }
 }
