@@ -27,14 +27,31 @@ async function main () {
     .setChromeService(serviceBuilder)
     .build();
 
-  let mlbMatchups: Matchup[] = [];
-  let nflMatchups: Matchup[] = [];
+  const mlbMatchups: Matchup[] = [];
+  const nflMatchups: Matchup[] = [];
 
   try {
     const draftKings = new DraftKings(driver);
-    
-    mlbMatchups = await draftKings.getMLBLines(moment());
-    nflMatchups = await draftKings.getNFLLines(moment().add(25, 'hours'));
+    let startDay = moment().startOf('day');
+    let oneDayMatchups: Matchup[] = [];
+
+    // Retrieve all MLB Matchups
+    do {
+      oneDayMatchups = await draftKings.getMLBLines(startDay);
+      startDay.add(1, 'day');
+
+      mlbMatchups.push(...oneDayMatchups);
+    } while (oneDayMatchups.length > 0)
+
+    // Retrieve all NFL Matchups
+    startDay = moment().startOf('day');
+    oneDayMatchups = [];
+    do {
+      oneDayMatchups = await draftKings.getNFLLines(startDay);
+      startDay.add(1, 'day');
+
+      nflMatchups.push(...oneDayMatchups);
+    } while (oneDayMatchups.length > 0)
   } catch (err) {
     console.log(err);
   } finally {
@@ -49,9 +66,12 @@ async function main () {
       away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
       date: matchup.date
     }
-  })).then((results) => {
-    console.log(`Successfully inserted ${results.length} entries to \`lines_mlb\``);
-  });
+  }))
+    .onConflict(['home_team', 'away_team', 'date'])
+    .merge(['home_line', 'away_line'])
+    .then((results: any) => {
+      console.log(`Successfully inserted ${results.rowCount} entries to \`lines_mlb\``);
+    });
 
   await Knex('lines_nfl').insert(nflMatchups.map((matchup) => {
     return {
@@ -61,9 +81,12 @@ async function main () {
       away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
       date: matchup.date
     }
-  })).then((results) => {
-    console.log(`Successfully inserted ${results.length} entries to \`lines_nfl\``);
-  });
+  }))
+    .onConflict(['home_team', 'away_team', 'date'])
+    .merge(['home_line', 'away_line'])
+    .then((results: any) => {
+      console.log(`Successfully inserted ${results.rowCount} entries to \`lines_nfl\``);
+    });
 
   process.exit(0);
 }

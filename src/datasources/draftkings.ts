@@ -11,15 +11,18 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   }
 
   async getMLBLines (currentDate: moment.Moment = moment()): Promise<Matchup[]> {
-    await this.driver.get('https://sportsbook.draftkings.com/leagues/baseball/mlb');
-    await this.driver.wait(until.titleMatches(/MLB Betting Odds & Lines/));
+    const targetURL = 'https://sportsbook.draftkings.com/leagues/baseball/mlb';
+    if (await this.driver.getCurrentUrl() !== targetURL) {
+      await this.driver.get(targetURL);
+      await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+    }
 
     const matchups: Matchup[] = [];
   
     let matchup_index = 1;
     let hasErrored = false;
 
-    const tableNum = currentDate.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
+    const tableNum = currentDate.diff(moment().startOf('day'), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
     while(!hasErrored) {
       try {
@@ -59,15 +62,18 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   }
 
   async getNFLLines(currentDate: moment.Moment = moment()): Promise<Matchup[]> {
-    await this.driver.get('https://sportsbook.draftkings.com/leagues/football/nfl');
-    await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
-
+    const targetURL = 'https://sportsbook.draftkings.com/leagues/football/nfl';
+    if (await this.driver.getCurrentUrl() !== targetURL) {
+      await this.driver.get(targetURL);
+      await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+    }
+    
     const matchups: Matchup[] = [];
   
     let matchup_index = 1;
     let hasErrored = false;
 
-    const tableNum = currentDate.diff(moment(), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
+    const tableNum = currentDate.diff(moment().startOf('day'), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
     while(!hasErrored) {
       try {

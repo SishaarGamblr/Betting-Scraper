@@ -8,6 +8,7 @@
     "port": 5432,
     "user": "superuser",
     "password": "password",
-    "database": "betting_scraper_db"
+    "database": "betting_scraper_db",
+    "ssl": false
   }
 }
