@@ -60,7 +60,7 @@ async function main () {
   }
 
   if (mlbMatchups.length > 0) {
-    await Knex('lines_mlb').insert(mlbMatchups.map((matchup) => {
+    await Knex('Line_MLB').insert(mlbMatchups.map((matchup) => {
       return {
         home_team: matchup.home_team.name,
         away_team: matchup.away_team.name,
@@ -72,14 +72,14 @@ async function main () {
       .onConflict(['home_team', 'away_team', 'date'])
       .merge(['home_line', 'away_line', 'date'])
       .then((results: any) => {
-        console.log(`Successfully inserted ${results.rowCount} entries to \`lines_mlb\``);
+        console.log(`Successfully inserted ${results.rowCount} entries to \`Line_MLB\``);
       });
   } else {
     console.log('No MLB matchups found');
   }
 
   if (nflMatchups.length > 0) {
-    await Knex('lines_nfl').insert(nflMatchups.map((matchup) => {
+    await Knex('Line_NFL').insert(nflMatchups.map((matchup) => {
       return {
         home_team: matchup.home_team.name,
         away_team: matchup.away_team.name,
@@ -91,7 +91,7 @@ async function main () {
       .onConflict(['home_team', 'away_team', 'date'])
       .merge(['home_line', 'away_line', 'date'])
       .then((results: any) => {
-        console.log(`Successfully inserted ${results.rowCount} entries to \`lines_nfl\``);
+        console.log(`Successfully inserted ${results.rowCount} entries to \`Line_NFL\``);
       });
   } else {
     console.log('No NFL matchups found');
