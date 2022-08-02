@@ -10,11 +10,16 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     this.driver = driver;
   }
 
+  async isDateStringVisible(driver: ThenableWebDriver) {
+    return await driver.findElement(By.css(`${this.getTableSelector(1)}${this.getMLBDateSelector()}`)).then(() => true).catch(() => false);
+  }
+
   async getMLBLines (currentDate: moment.Moment = moment()): Promise<Matchup[]> {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/baseball/mlb';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+      await this.driver.wait(this.isDateStringVisible(this.driver), 30000);
     }
 
     const matchups: Matchup[] = [];
