@@ -15,7 +15,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
-      await this.driver.wait(until.elementLocated(By.css(`${this.getTableSelector(1)}${this.getMLBDateSelector()}`)), 30000).then(() => console.log('dateString located!'));
+      await this.driver.wait(until.elementLocated(By.css(`${this.getTableSelector(1)}${this.getMLBDateSelector()}`)), 60000).then(() => console.log('dateString located!'));
     }
 
     const matchups: Matchup[] = [];
