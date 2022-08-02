@@ -56,6 +56,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         matchup_index += 2;
       } catch (err) {
+        console.log(err);
         hasErrored = true;
       }
     }
