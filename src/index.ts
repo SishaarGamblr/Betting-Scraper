@@ -70,7 +70,7 @@ async function main () {
       }
     }))
       .onConflict(['home_team', 'away_team', 'date'])
-      .merge(['home_line', 'away_line'])
+      .merge(['home_line', 'away_line', 'date'])
       .then((results: any) => {
         console.log(`Successfully inserted ${results.rowCount} entries to \`lines_mlb\``);
       });
@@ -89,7 +89,7 @@ async function main () {
       }
     }))
       .onConflict(['home_team', 'away_team', 'date'])
-      .merge(['home_line', 'away_line'])
+      .merge(['home_line', 'away_line', 'date'])
       .then((results: any) => {
         console.log(`Successfully inserted ${results.rowCount} entries to \`lines_nfl\``);
       });
