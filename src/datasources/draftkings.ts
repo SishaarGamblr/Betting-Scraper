@@ -140,7 +140,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   }
 
   private getTableSelector(tableNum: number) {
-    return `#root > section > section.sportsbook-wrapper__body > section > div.sportsbook-league-page__body > div > div.sportsbook-responsive-card-container__body > div > div > div.sportsbook-card-accordion__children-wrapper > div > div:nth-child(2) > div:nth-child(${tableNum})  > `;
+    return `#root > section > section.sportsbook-wrapper__body > section > div.sportsbook-league-page__body > div > div.sportsbook-responsive-card-container__body > div > div > div.sportsbook-card-accordion__children-wrapper > div > div:nth-child(2) > div:nth-child(${tableNum}) > `;
   }
   
   private getRowSelector (row: number) {
