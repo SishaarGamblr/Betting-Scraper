@@ -20,7 +20,7 @@ options.addArguments(
   '--no-sandbox',
   '--disable-dev-shm-usage',
   '--remote-debugging-port=9222',
-  '--window-size=1920x1480'
+  '--window-size=2560x1280',
 );
 
 async function main () {
