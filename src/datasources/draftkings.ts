@@ -27,13 +27,59 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
     while(!hasErrored) {
       try {
-        const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-        const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
+        // const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        // const homeLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)).then((element) => element.getText());
         
-        const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
-        const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
+        // const awayTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
+        // const awayLine = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)).then((element) => element.getText());
 
-        const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
+        // const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
+
+        const [homeTeam, homeLine, awayTeam, awayLine, dateString] = await Promise.all([
+          this.driver.wait(
+            until.elementLocated(
+              By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`), 
+            ),
+            60000,
+            'Home Team not found',
+            2000
+          ).then((element) => element.getText()),
+          this.driver.wait(
+            until.elementLocated(
+              By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getLineSelector()}`)
+            ),
+            60000,
+            'Home Line not found',
+            2000
+          ).then((element) => element.getText()),
+          this.driver.wait(
+            until.elementLocated(
+              By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getTeamNameSelector()}`)
+            ),
+            60000,
+            'Away Team not found',
+            2000
+          ).then((element) => element.getText()),
+          this.driver.wait(
+            until.elementLocated(
+              By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index + 1)}${this.getLineSelector()}`)
+            ),
+            60000,
+            'Away Line not found',
+            2000
+          ).then((element) => element.getText()),
+          this.driver.wait(
+            until.elementLocated(
+              By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)
+            ),
+            60000,
+            'Date not found',
+            2000
+          ).then((element) => element.getText())
+        ]).catch((err) => {
+          console.error('Error retrieiving matchup', err);
+          throw err;
+        });
 
         matchups.push({
           home_team: {
