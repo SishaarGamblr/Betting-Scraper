@@ -45,8 +45,6 @@ async function main () {
       oneDayMatchups = await draftKings.getMLBLines(startDay);
       startDay.add(1, 'day');
 
-      console.log(oneDayMatchups);
-
       mlbMatchups.push(...oneDayMatchups);
     } while (oneDayMatchups.length > 0)
 
