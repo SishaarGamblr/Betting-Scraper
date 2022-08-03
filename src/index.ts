@@ -11,13 +11,17 @@ import Knex from './db/knex';
 const options = new Options();
 
 options.setChromeBinaryPath(Config.get<string>('chrome.binary_path'));
-options.addArguments("user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36");
 
 // These options are necessary if you'd like to deploy to Heroku
-options.addArguments("--headless");
-options.addArguments("--disable-gpu");
-options.addArguments("--no-sandbox");
-options.addArguments("--disable-dev-shm-usage");
+options.addArguments(
+  '--headless',
+  'user-agent=Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.134 Safari/537.36',
+  '--disable-gpu',
+  '--no-sandbox',
+  '--disable-dev-shm-usage',
+  '--remote-debugging-port=9222',
+  '--window-size=1920x1480'
+);
 
 async function main () {
   const serviceBuilder = new ServiceBuilder(Config.get<string>('chrome.driver_path'));
