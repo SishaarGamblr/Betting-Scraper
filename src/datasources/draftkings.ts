@@ -25,8 +25,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
     const tableNum = currentDate.diff(moment().startOf('day'), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
-    console.log(tableNum);
-
     while(!hasErrored) {
       try {
         const homeTeam = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getTeamNameSelector()}`)).then((element) => element.getText());
@@ -57,7 +55,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         matchup_index += 2;
       } catch (err) {
-        console.log(err);
         hasErrored = true;
       }
     }
