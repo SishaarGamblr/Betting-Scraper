@@ -20,8 +20,10 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
     }
 
+    // Write screenshot
     // const filename = randomUUID().slice(0, 5) + '.png';
     // await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
+    // $ curl -F "file=@myfile.csv" https://file.io
 
     const matchups: Matchup[] = [];
   
@@ -39,8 +41,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
-
-        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -69,7 +69,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     return matchups;
   }
 
-  async getNFLLines(currentDate: moment.Moment = moment()): Promise<Matchup[]> {
+  async getNFLLines(tableNum: number = 1): Promise<Matchup[]> {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/football/nfl';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
@@ -80,8 +80,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   
     let matchup_index = 1;
     let hasErrored = false;
-
-    const tableNum = currentDate.diff(moment().startOf('day'), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
     while(!hasErrored) {
       try {
@@ -94,8 +92,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getNFLDateSelector()}`)).then((element) => element.getText());
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
-
-        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -122,22 +118,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     }
 
     return matchups;
-  }
-
-  private inferDateFromString(dateString: string): moment.Moment {
-    if (dateString.match(/TODAY/)) {
-      return moment().startOf('day');
-    }
-
-    if (dateString.match(/TOMORROW/)) {
-      return moment().startOf('day').add(1, 'day');
-    }
-
-    if (dateString.match(/[A-Z]{3} [A-Z]{3}/)) {
-      return moment(dateString.slice(4), 'MMM Do');
-    }
-
-    throw new Error(`Unrecognized date format: ${dateString}`);
   }
 
   private inferMomentFromDateAndTime(date: string, startTime?: string): moment.Moment {

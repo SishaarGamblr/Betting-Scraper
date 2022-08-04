@@ -49,11 +49,11 @@ async function main () {
     } while (tableNum < 3)
 
     // Retrieve all NFL Matchups
-    let startDay = moment().startOf('day');
+    tableNum = 1; //
     oneDayMatchups = [];
     do {
-      oneDayMatchups = await draftKings.getNFLLines(startDay);
-      startDay.add(1, 'day');
+      oneDayMatchups = await draftKings.getNFLLines(tableNum);
+      tableNum++;
 
       nflMatchups.push(...oneDayMatchups);
     } while (oneDayMatchups.length > 0)
@@ -70,11 +70,13 @@ async function main () {
         away_team: matchup.away_team.name,
         home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
         away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
-        date: matchup.date.toISOString()
+        date: matchup.date.toISOString(),
+        createdAt: moment().toISOString(),
+        updatedAt: moment().toISOString()
       }
     }))
       .onConflict(['home_team', 'away_team', 'date'])
-      .merge(['home_line', 'away_line', 'date'])
+      .merge(['home_line', 'away_line', 'date', 'updatedAt'])
       .then((results: any) => {
         console.log(`Successfully inserted ${results.rowCount} entries to \`Line_MLB\``);
       });
@@ -89,11 +91,13 @@ async function main () {
         away_team: matchup.away_team.name,
         home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
         away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
-        date: matchup.date.toISOString()
+        date: matchup.date.toISOString(),
+        createdAt: moment().toISOString(),
+        updatedAt: moment().toISOString()
       }
     }))
       .onConflict(['home_team', 'away_team', 'date'])
-      .merge(['home_line', 'away_line', 'date'])
+      .merge(['home_line', 'away_line', 'date', 'updatedAt'])
       .then((results: any) => {
         console.log(`Successfully inserted ${results.rowCount} entries to \`Line_NFL\``);
       });
