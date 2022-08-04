@@ -37,7 +37,7 @@ async function main () {
 
   try {
     const draftKings = new DraftKings(driver);
-    let tableNum = 1
+    let tableNum = 0
     let oneDayMatchups: Matchup[] = [];
 
     // Retrieve all MLB Matchups
@@ -46,7 +46,7 @@ async function main () {
       tableNum++;
 
       mlbMatchups.push(...oneDayMatchups);
-    } while (oneDayMatchups.length > 0)
+    } while (tableNum < 3)
 
     // Retrieve all NFL Matchups
     let startDay = moment().startOf('day');
