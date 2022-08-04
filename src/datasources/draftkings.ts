@@ -42,6 +42,8 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
 
+        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
+
         matchups.push({
           home_team: {
             name: homeTeam
