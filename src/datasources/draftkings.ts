@@ -20,8 +20,8 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
     }
 
-    // const filename = randomUUID().slice(0, 5) + '.png';
-    // await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
+    const filename = randomUUID().slice(0, 5) + '.png';
+    await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
 
     const matchups: Matchup[] = [];
   
