@@ -1,3 +1,4 @@
+import { table } from "console";
 import { randomUUID } from "crypto";
 import { writeFile } from "fs/promises";
 import moment from "moment";
@@ -17,11 +18,10 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
-      await this.driver.wait(until.elementLocated(By.css(`${this.getTableSelector(1)}${this.getMLBDateSelector()}`)), 60000).then(() => console.log('dateString located!'));
     }
 
-    const filename = randomUUID().slice(0, 5) + '.png';
-    await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
+    // const filename = randomUUID().slice(0, 5) + '.png';
+    // await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
 
     const matchups: Matchup[] = [];
   
@@ -40,7 +40,9 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getMLBDateSelector()}`)).then((element) => element.getText());
 
-        console.log(homeTeam, homeLine, awayTeam, awayLine, dateString);
+        const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
+
+        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -57,7 +59,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
             favor: awayLine.charAt(0),
             odds: parseInt(awayLine.slice(1))
           },
-          date: this.inferDateFromString(dateString)
+          date: this.inferMomentFromDateAndTime(dateString, startTimeString)
         })
 
         matchup_index += 2;
@@ -93,6 +95,10 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getNFLDateSelector()}`)).then((element) => element.getText());
 
+        const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
+
+        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
+
         matchups.push({
           home_team: {
             name: homeTeam
@@ -108,7 +114,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
             favor: awayLine.charAt(0),
             odds: parseInt(awayLine.slice(1))
           },
-          date: this.inferDateFromString(dateString)
+          date: this.inferMomentFromDateAndTime(dateString, startTimeString)
         });
 
         matchup_index += 2;
@@ -136,12 +142,40 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     throw new Error(`Unrecognized date format: ${dateString}`);
   }
 
+  private inferMomentFromDateAndTime(date: string, startTime?: string): moment.Moment {
+    let inferredMoment: moment.Moment;
+
+    if (date.match(/TODAY/)) {
+      inferredMoment = moment().startOf('day');
+    }
+    else if (date.match(/TOMORROW/)) {
+      inferredMoment = moment().startOf('day').add(1, 'day');
+    }
+    else if (date.match(/[A-Z]{3} [A-Z]{3}/)) {
+      inferredMoment = moment(date.slice(4), 'MMM Do');
+    }
+    else {
+      throw new Error(`Unrecognized date format: ${date}`);
+    }
+
+    
+    if (startTime) {
+      inferredMoment = moment(`${inferredMoment.format('YYYY-MM-DD')} ${startTime}`, 'YYYY-MM-DD h:mm A');
+    }
+
+    return inferredMoment;
+  }
+
   private getNFLDateSelector() {
     return `table > thead > tr > th.always-left.column-header > div > span > span`;
   }
 
   private getMLBDateSelector() {
     return `table > thead > tr > th.always-left.column-header > div > span > span > span`;
+  }
+
+  private getStartTimeSelector() {
+    return `th > a > div > div.event-cell__status > span`;
   }
 
   private getTableSelector(tableNum: number) {
