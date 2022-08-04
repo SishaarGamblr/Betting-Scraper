@@ -13,22 +13,20 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     this.driver = driver;
   }
 
-  async getMLBLines (currentDate: moment.Moment = moment()): Promise<Matchup[]> {
+  async getMLBLines (tableNum: number = 1): Promise<Matchup[]> {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/baseball/mlb';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
     }
 
-    const filename = randomUUID().slice(0, 5) + '.png';
-    await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
+    // const filename = randomUUID().slice(0, 5) + '.png';
+    // await writeFile(filename, await this.driver.takeScreenshot(), 'base64').then(() => { console.log(`Wrote ${filename}`)});
 
     const matchups: Matchup[] = [];
   
     let matchup_index = 1;
     let hasErrored = false;
-
-    const tableNum = currentDate.diff(moment().startOf('day'), 'days', false) + 1; // We add 1 since this is supplied to CSS selector, which is 1-indexed
 
     while(!hasErrored) {
       try {

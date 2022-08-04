@@ -37,19 +37,19 @@ async function main () {
 
   try {
     const draftKings = new DraftKings(driver);
-    let startDay = moment().startOf('day');
+    let tableNum = 1
     let oneDayMatchups: Matchup[] = [];
 
     // Retrieve all MLB Matchups
     do {
-      oneDayMatchups = await draftKings.getMLBLines(startDay);
-      startDay.add(1, 'day');
+      oneDayMatchups = await draftKings.getMLBLines(tableNum);
+      tableNum++;
 
       mlbMatchups.push(...oneDayMatchups);
     } while (oneDayMatchups.length > 0)
 
     // Retrieve all NFL Matchups
-    startDay = moment().startOf('day');
+    let startDay = moment().startOf('day');
     oneDayMatchups = [];
     do {
       oneDayMatchups = await draftKings.getNFLLines(startDay);
