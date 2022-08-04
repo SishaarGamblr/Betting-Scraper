@@ -70,9 +70,9 @@ async function main () {
         away_team: matchup.away_team.name,
         home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
         away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
-        date: matchup.date.toISOString(),
-        createdAt: moment().toISOString(),
-        updatedAt: moment().toISOString()
+        date: matchup.date.format(),
+        createdAt: moment().format(),
+        updatedAt: moment().format(),
       }
     }))
       .onConflict(['home_team', 'away_team', 'date'])
