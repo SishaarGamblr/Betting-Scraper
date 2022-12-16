@@ -12,5 +12,5 @@ try {
   process.exit(1);
 }
 
-app.log.info(`🚀  Fastify server running on port ${FASTIFY_PORT}`);
+console.log(`🚀  Fastify server running on port ${FASTIFY_PORT}`);
 
