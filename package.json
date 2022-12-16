@@ -13,7 +13,7 @@
     "db:migrate:make": "knex migrate:make --knexfile src/db/index.ts -x ts",
     "db:reset": "if [ \"$NODE_ENV\" != \"production\" ]; then dropdb betting_scraper_db; npm run db:setup && npm run db:migrate; fi",
     "db:rollback": "knex migrate:rollback --knexfile src/db/index.ts",
-    "db:setup": "if [ \"$NODE_ENV\" != \"production\" ]; then createdb -O superuser betting_scraper_db); fi",
+    "db:setup": "if [ \"$NODE_ENV\" != \"production\" ]; then createdb -O superuser betting_scraper_db; fi",
     "db:setup:user": "if [ \"$NODE_ENV\" != \"production\" ]; then createuser superuser; fi",
     "db:seed:test": "NODE_ENV=test npm run db:seed",
     "db:reset:test": "NODE_ENV=test npm run db:reset",
