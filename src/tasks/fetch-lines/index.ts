@@ -3,10 +3,10 @@ import Config from 'config';
 
 import { Browser, Builder } from 'selenium-webdriver';
 import { Options, ServiceBuilder } from 'selenium-webdriver/chrome';
-import { Matchup } from './datasources/common';
-import { DraftKings } from './datasources/draftkings';
+import { Matchup } from '../../datasources/common';
+import { DraftKings } from '../../datasources/draftkings';
 
-import Knex from './db/knex';
+import Knex from '../../db/knex';
 
 const options = new Options();
 
