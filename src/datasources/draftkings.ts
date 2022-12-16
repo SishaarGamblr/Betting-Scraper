@@ -9,6 +9,8 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
   private driver: ThenableWebDriver;
 
+  private DEFAULT_TIMEOUT = 60000;
+
   constructor (driver: ThenableWebDriver) {
     this.driver = driver;
   }
@@ -17,7 +19,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/baseball/mlb';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
-      await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+      await this.driver.wait(until.titleMatches(/Betting Odds/), this.DEFAULT_TIMEOUT);
     }
 
     // Write screenshot
@@ -42,7 +44,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
 
-        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
+        console.debug(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -75,7 +77,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/football/nfl';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
-      await this.driver.wait(until.titleMatches(/Betting Odds & Lines/));
+      await this.driver.wait(until.titleMatches(/Betting Odds/), this.DEFAULT_TIMEOUT);
     }
     
     const matchups: Matchup[] = [];
@@ -94,6 +96,8 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
         const dateString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getNFLDateSelector()}`)).then((element) => element.getText());
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
+
+        console.debug(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -115,7 +119,6 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         matchup_index += 2;
       } catch (err) {
-        console.error(err);
         hasErrored = true;
       }
     }
@@ -127,7 +130,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     const targetURL = 'https://sportsbook.draftkings.com/leagues/basketball/nba';
     if (await this.driver.getCurrentUrl() !== targetURL) {
       await this.driver.get(targetURL);
-      await this.driver.wait(until.titleMatches(/Betting Odds, Spreads & Lines/));
+      await this.driver.wait(until.titleMatches(/Betting Odds/), this.DEFAULT_TIMEOUT);
     }
 
     // Write screenshot
@@ -152,7 +155,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
         const startTimeString = await this.driver.findElement(By.css(`${this.getTableSelector(tableNum)}${this.getRowSelector(matchup_index)}${this.getStartTimeSelector()}`)).then((element) => element.getText());
 
-        console.log(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
+        console.debug(homeTeam, homeLine, awayTeam, awayLine, this.inferMomentFromDateAndTime(dateString, startTimeString));
 
         matchups.push({
           home_team: {
@@ -231,7 +234,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   private getTeamNameSelector() {
     return `th > a > div > div.event-cell > div > span > div > div`;
   }
-  
+
   private getLineSelector() {
     return `td:nth-child(4) > div > div > div > div > div:nth-child(2) > span`;
   }

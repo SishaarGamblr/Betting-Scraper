@@ -34,6 +34,7 @@ async function main () {
 
   const mlbMatchups: Matchup[] = [];
   const nflMatchups: Matchup[] = [];
+  const nbaMatchups: Matchup[] = [];
 
   try {
     const draftKings = new DraftKings(driver);
@@ -41,12 +42,12 @@ async function main () {
     let oneDayMatchups: Matchup[] = [];
 
     // Retrieve all MLB Matchups
-    do {
-      oneDayMatchups = await draftKings.getMLBLines(tableNum);
-      tableNum++;
+    // do {
+    //   oneDayMatchups = await draftKings.getMLBLines(tableNum);
+    //   tableNum++;
 
-      mlbMatchups.push(...oneDayMatchups);
-    } while (tableNum < 3)
+    //   mlbMatchups.push(...oneDayMatchups);
+    // } while (tableNum < 3)
 
     // Retrieve all NFL Matchups
     tableNum = 1; //
@@ -56,6 +57,16 @@ async function main () {
       tableNum++;
 
       nflMatchups.push(...oneDayMatchups);
+    } while (oneDayMatchups.length > 0)
+
+    // Retrieve all NBA Matchups
+    tableNum = 1; //
+    oneDayMatchups = [];
+    do {
+      oneDayMatchups = await draftKings.getNBALines(tableNum);
+      tableNum++;
+
+      nbaMatchups.push(...oneDayMatchups);
     } while (oneDayMatchups.length > 0)
   } catch (err) {
     console.log(err);
@@ -103,6 +114,27 @@ async function main () {
       });
   } else {
     console.log('No NFL matchups found');
+  }
+
+  if (nbaMatchups.length > 0) {
+    await Knex('Line_NBA').insert(nbaMatchups.map((matchup) => {
+      return {
+        home_team: matchup.home_team.name,
+        away_team: matchup.away_team.name,
+        home_line: `${matchup.home_line.favor}${matchup.home_line.odds}`,
+        away_line: `${matchup.away_line.favor}${matchup.away_line.odds}`,
+        date: matchup.date.toISOString(),
+        createdAt: moment().toISOString(),
+        updatedAt: moment().toISOString()
+      }
+    }))
+      .onConflict(['home_team', 'away_team', 'date'])
+      .merge(['home_line', 'away_line', 'date', 'updatedAt'])
+      .then((results: any) => {
+        console.log(`Successfully inserted ${results.rowCount} entries to \`Line_NBA\``);
+      });
+  } else {
+    console.log('No NBA matchups found');
   }
 
   process.exit(0);
