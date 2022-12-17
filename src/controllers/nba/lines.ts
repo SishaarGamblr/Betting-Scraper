@@ -11,7 +11,7 @@ function isISODate(date: string) {
   return true;
 }
 
-export default async function linesController(fastify: FastifyInstance) {
+export default async function nbaLinesController(fastify: FastifyInstance) {
   fastify.get(
     '/lines',
     {
@@ -37,7 +37,7 @@ export default async function linesController(fastify: FastifyInstance) {
         reply.send(new Error('Invalid date provided, must be YYYY-MM-DD'));
       }
 
-      const lines = await prisma.line_NFL.findMany({
+      const lines = await prisma.line_NBA.findMany({
         where: {
           date: {
             gte: date?.startOf('day').toISOString(),

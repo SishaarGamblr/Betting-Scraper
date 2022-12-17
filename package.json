@@ -27,6 +27,12 @@
   "prisma": {
     "seed": "ts-node prisma/seed.ts"
   },
+  "prettier": {
+    "singleQuote": true
+  },
+  "nodemonConfig": {
+    "delay": 1500
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/SishaarGamblr/Betting-Scraper.git"

@@ -1,9 +1,9 @@
-import { table } from "console";
-import { randomUUID } from "crypto";
-import { writeFile } from "fs/promises";
-import moment from "moment";
-import { By, ThenableWebDriver, until } from "selenium-webdriver";
-import { Matchup, MLB_LineSource, NFL_LineSource } from "./common";
+import { table } from 'console';
+import { randomUUID } from 'crypto';
+import { writeFile } from 'fs/promises';
+import moment from 'moment';
+import { By, ThenableWebDriver, until } from 'selenium-webdriver';
+import { Matchup, MLB_LineSource, NFL_LineSource } from './common';
 
 export class DraftKings implements MLB_LineSource, NFL_LineSource {
   private driver: ThenableWebDriver;
@@ -15,7 +15,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   }
 
   async getMLBLines(tableNum: number = 1): Promise<Matchup[]> {
-    const targetURL = "https://sportsbook.draftkings.com/leagues/baseball/mlb";
+    const targetURL = 'https://sportsbook.draftkings.com/leagues/baseball/mlb';
     if ((await this.driver.getCurrentUrl()) !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(
@@ -128,7 +128,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
   }
 
   async getNFLLines(tableNum: number = 1): Promise<Matchup[]> {
-    const targetURL = "https://sportsbook.draftkings.com/leagues/football/nfl";
+    const targetURL = 'https://sportsbook.draftkings.com/leagues/football/nfl';
     if ((await this.driver.getCurrentUrl()) !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(
@@ -237,7 +237,7 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
 
   async getNBALines(tableNum: number = 1): Promise<Matchup[]> {
     const targetURL =
-      "https://sportsbook.draftkings.com/leagues/basketball/nba";
+      'https://sportsbook.draftkings.com/leagues/basketball/nba';
     if ((await this.driver.getCurrentUrl()) !== targetURL) {
       await this.driver.get(targetURL);
       await this.driver.wait(
@@ -356,19 +356,19 @@ export class DraftKings implements MLB_LineSource, NFL_LineSource {
     let inferredMoment: moment.Moment;
 
     if (date.match(/TODAY/)) {
-      inferredMoment = moment().startOf("day");
+      inferredMoment = moment().startOf('day');
     } else if (date.match(/TOMORROW/)) {
-      inferredMoment = moment().startOf("day").add(1, "day");
+      inferredMoment = moment().startOf('day').add(1, 'day');
     } else if (date.match(/[A-Z]{3} [A-Z]{3}/)) {
-      inferredMoment = moment(date.slice(4), "MMM Do");
+      inferredMoment = moment(date.slice(4), 'MMM Do');
     } else {
       throw new Error(`Unrecognized date format: ${date}`);
     }
 
     if (startTime) {
       inferredMoment = moment(
-        `${inferredMoment.format("YYYY-MM-DD")} ${startTime}`,
-        "YYYY-MM-DD h:mm A"
+        `${inferredMoment.format('YYYY-MM-DD')} ${startTime}`,
+        'YYYY-MM-DD h:mm A'
       );
     }
 
