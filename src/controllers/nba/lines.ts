@@ -11,7 +11,7 @@ function isISODate(date: string) {
   return true;
 }
 
-export default async function linesController(fastify: FastifyInstance) {
+export default async function nbaLinesController(fastify: FastifyInstance) {
   fastify.get(
     '/lines',
     {
