@@ -5,8 +5,10 @@
   "scripts": {
     "test": "test",
     "build": "npm run clean; tsc -p tsconfig.build.json;",
-    "clean": "rm -rf dist",
+    "build:watch": "npm run clean; tsc -p tsconfig.build.json --watch --preserveWatchOutput --pretty",
+    "clean": "rimraf dist",
     "docker:dev": "docker-compose up",
+    "docker:dev:build": "docker-compose up --build",
     "docker:connect": "docker-compose exec app /bin/bash",
     "db:connect": "docker-compose exec postgres psql -d betting_scraper_db -U superuser",
     "db:migrate": "knex migrate:latest --knexfile src/db/index.ts",
@@ -17,7 +19,13 @@
     "db:setup:user": "if [ \"$NODE_ENV\" != \"production\" ]; then createuser superuser; fi",
     "db:seed:test": "NODE_ENV=test npm run db:seed",
     "db:reset:test": "NODE_ENV=test npm run db:reset",
-    "db:setup:test": "NODE_ENV=test npm run db:setup"
+    "db:setup:test": "NODE_ENV=test npm run db:setup",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "start": "node dist/index.js",
+    "start:dev": "nodemon src/index.ts"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "repository": {
     "type": "git",
@@ -30,20 +38,27 @@
   },
   "homepage": "https://github.com/SishaarGamblr/Betting-Scraper#readme",
   "devDependencies": {
-    "@tsconfig/node16": "^1.0.3",
+    "@prisma/client": "^4.7.1",
+    "@tsconfig/node18": "^1.0.1",
+    "@types/config": "^0.0.41",
     "@types/node": "^18.6.1",
     "@types/selenium-webdriver": "^4.1.2",
+    "fastify-tsconfig": "^1.0.1",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.9.1",
+    "tslib": "^2.4.0",
     "typescript": "^4.7.4"
   },
   "dependencies": {
-    "@types/config": "^0.0.41",
     "config": "^3.3.7",
     "dotenv": "^16.0.1",
+    "fastify": "^4.10.2",
     "knex": "^2.2.0",
     "moment": "^2.29.4",
     "pg": "^8.7.3",
-    "selenium-webdriver": "^4.7.1",
-    "ts-node": "^10.9.1",
-    "tslib": "^2.4.0"
+    "prisma": "^4.7.1",
+    "selenium-webdriver": "^4.7.1"
   }
 }

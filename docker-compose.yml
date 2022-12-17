@@ -7,14 +7,16 @@ services:
       context: .
       target: development
       dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
     volumes:
-      - .:/dist
-    working_dir: /dist
+      - .:/app
+    working_dir: /app
     networks:
       - default
     depends_on:
       - postgres
-    command: tail -f /dev/null
+    # command: tail -f /dev/null
   
   postgres:
     container_name: postgres
