@@ -45,6 +45,7 @@
     "@types/selenium-webdriver": "^4.1.2",
     "fastify-tsconfig": "^1.0.1",
     "nodemon": "^2.0.20",
+    "prettier": "^2.8.1",
     "rimraf": "^3.0.2",
     "ts-node": "^10.9.1",
     "tslib": "^2.4.0",
