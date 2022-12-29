@@ -1,5 +1,7 @@
 # Betting-Scraper <!-- omit from toc -->
 
+![image](https://user-images.githubusercontent.com/20084278/209895111-6ef836f6-282c-40dd-83b5-39ed31c34d7d.png)
+
 - [Getting Started](#getting-started)
 - [Running tasks](#running-tasks)
 - [Working with the database](#working-with-the-database)
